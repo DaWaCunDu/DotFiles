@@ -1,0 +1,7 @@
+#+title: Index.org
+#+Description: Landing page for www.FoolishLee.com
+#+Author: FoolishLee
+#+Publish: true
+
+* Welcome To FoolishVille!
+** Where Clowning Around is Serious Business!

@@ -1,0 +1,59 @@
+(setq doom-font (font-spec :family "JetBrains Mono" :size 16))
+
+;;(setq doom-theme 'doom-one)
+;; (setq doom-theme 'wombat)
+(setq doom-theme 'doom-1337)
+
+(setq display-line-numbers-type t)
+
+(setq org-directory "~/org/")
+(setq org-modern-table-vertical 1)
+(setq org-modern-table t)
+(add-hook 'org-mode-hook #'hl-todo-mode)
+
+(custom-set-faces!
+  '(org-level-8 :inherit outline-3 :height 1.0)
+  '(org-level-7 :inherit outline-3 :height 1.0)
+  '(org-level-6 :inherit outline-3 :height 1.1)
+  '(org-level-5 :inherit outline-3 :height 1.2)
+  '(org-level-4 :inherit outline-3 :height 1.3)
+  '(org-level-3 :inherit outline-3 :height 1.4)
+  '(org-level-2 :inherit outline-2 :height 1.5)
+  '(org-level-1 :inherit outline-1 :height 1.6)
+  '(org-document-title :height 1.8 :bold t :underline nil))
+
+(setq markdown-header-scaling t)
+
+(custom-set-faces
+ '(markdown-header-face-1 ((t (:inherit markdown-header-face :height 1.6))))
+ '(markdown-header-face-2 ((t (:inherit markdown-header-face :height 1.4))))
+ '(markdown-header-face-3 ((t (:inherit markdown-header-face :height 1.2))))
+ '(markdown-header-face-4 ((t (:inherit markdown-header-face :height 1.1))))
+ )
+
+(map! :leader
+      :desc "Comment Line" "#" #'comment-line)
+(map! :leader
+      :desc "Toggle TreeMacs" "e" #'treemacs)
+(map! :leader
+      :desc "Terminal in Vertical Split"
+      "t t" (lambda () (interactive) (evil-window-vsplit) (+vterm/here nil)))
+
+(after! eww
+  (setq display-buffer-alist
+        '(("\\*eww\\*"
+           (display-buffer-in-direction)
+           (direction . right) ; Change to 'left' if preferred
+           (dedicated . nil)
+           (window-width . 0.5)))) ; Adjust width ratio here
+)
+(after! vterm
+  (setq display-buffer-alist
+        '(("\\*vterm\\*"
+           (display-buffer-in-direction)
+           (direction . right) ; Change to 'left' if preferred
+           (dedicated . nil)
+           (window-width . 0.5)))) ; Adjust width ratio here
+)
+
+(setq confirm-kill-emacs nil)
