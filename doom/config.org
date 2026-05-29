@@ -8,14 +8,14 @@
 
 ;;(setq doom-theme 'doom-one)
 ;; (setq doom-theme 'wombat)
-(setq doom-theme 'doom-1337)
+;; (setq doom-theme 'doom-1337)
+(setq doom-theme 'doom-old-hope)
 
 (setq display-line-numbers-type t)
 #+end_src
 
 * Org Config:
 #+begin_src emacs-lisp
-
 (setq org-directory "~/org/")
 (setq org-modern-table-vertical 1)
 (setq org-modern-table t)
@@ -51,7 +51,16 @@
 (map! :leader
       :desc "Comment Line" "#" #'comment-line)
 (map! :leader
-      :desc "Toggle TreeMacs" "e" #'treemacs)
+      :desc "Toggle SmartParens" "t s" #'smartparens-mode)
+(map! :leader
+      :desc "Centaur-Tabs BackWard" "t p" #'centaur-tabs-backward)
+(map! :leader
+      :desc "Centaur-Tabs ForWard" "t n" #'centaur-tabs-forward)
+(map! :leader
+      :desc "Toggle TreeMacs" "e" #'+treemacs/toggle)
+(map! :leader
+      :desc "Toggle vterm popup"
+      "v" #'+vterm/toggle)
 (map! :leader
       :desc "Terminal in Vertical Split"
       "t t" (lambda () (interactive) (evil-window-vsplit) (+vterm/here nil)))
@@ -59,6 +68,7 @@
 
 * Misc Flags:
 #+begin_src emacs-lisp
+(set-popup-rule! "^\\*doom:vterm-popup" :side 'right :size 0.35 :select t :quit nil :ttl nil)
 (after! eww
   (setq display-buffer-alist
         '(("\\*eww\\*"
@@ -67,14 +77,22 @@
            (dedicated . nil)
            (window-width . 0.5)))) ; Adjust width ratio here
 )
-(after! vterm
-  (setq display-buffer-alist
-        '(("\\*vterm\\*"
-           (display-buffer-in-direction)
-           (direction . right) ; Change to 'left' if preferred
-           (dedicated . nil)
-           (window-width . 0.5)))) ; Adjust width ratio here
-)
+;; (after! vterm
+;;   (setq display-buffer-alist
+;;         '(("\\*vterm\\*"
+;;            (display-buffer-in-direction)
+;;            (direction . right) ; Change to 'left' if preferred
+;;            (dedicated . nil)
+;;            (window-width . 0.5)))) ; Adjust width ratio here
+;; )
+;; Should fix j and k to move on visual line instead of physical lines
+(with-eval-after-load 'evil-maps
+  (define-key evil-motion-state-map (kbd "j") 'evil-next-visual-line)
+  (define-key evil-motion-state-map (kbd "k") 'evil-previous-visual-line))
 
 (setq confirm-kill-emacs nil)
+;; (after! smartparens
+;;   (sp-pair "*" nil :actions :rem))
+
+(use-package! pgmacs)
 #+end_src
