@@ -49,6 +49,12 @@
       :desc "Terminal in Vertical Split"
       "t t" (lambda () (interactive) (evil-window-vsplit) (+vterm/here nil)))
 
+;; Word Wrapping
+(setq-default fill-column 80) ; Set the target wrap column
+
+;; Automatically enable visual-fill-column when visual-line-mode is on
+(add-hook 'visual-line-mode-hook #'visual-fill-column-mode)
+
 (set-popup-rule! "^\\*doom:vterm-popup" :side 'right :size 0.35 :select t :quit nil :ttl nil)
 (after! eww
   (setq display-buffer-alist

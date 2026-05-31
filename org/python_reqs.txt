@@ -1,0 +1,1 @@
+rass, pylsp, pyls, basedpyright-langserver, pyright-langserver, pyrefly, ty, jedi-language-server,ruff,ruff-lsp are not valid executables

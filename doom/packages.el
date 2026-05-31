@@ -57,3 +57,4 @@
 (package! pg :recipe (:host github :repo "emarsden/pg-el"))
 (package! pgmacs :recipe (:host github :repo "emarsden/pgmacs"))
 (package! shell-pop)
+(package! visual-fill-column)
