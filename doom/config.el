@@ -1,4 +1,13 @@
-(setq doom-font (font-spec :family "JetBrains Mono" :size 16))
+(after! time
+  ;; (setq display-time-string-forms
+        ;; '((propertize (concat 24-hr time) 'face 'doom-modeline-time)))
+  (setq display-time-format "%H:%M")
+  (setq display-time-default-load-average nil))
+  (setq display-time-interval 60)
+  (display-time-mode 1)
+
+
+(setq doom-font (font-spec :family "JetBrains Mono" :size 14))
 
 ;;(setq doom-theme 'doom-one)
 ;; (setq doom-theme 'wombat)
@@ -50,12 +59,12 @@
       "t t" (lambda () (interactive) (evil-window-vsplit) (+vterm/here nil)))
 
 ;; Word Wrapping
-(setq-default fill-column 80) ; Set the target wrap column
+(setq-default fill-column 100) ; Set the target wrap column
 
 ;; Automatically enable visual-fill-column when visual-line-mode is on
 (add-hook 'visual-line-mode-hook #'visual-fill-column-mode)
 
-(set-popup-rule! "^\\*doom:vterm-popup" :side 'right :size 0.35 :select t :quit nil :ttl nil)
+(set-popup-rule! "^\\*doom:vterm-popup" :side 'right :size 0.45 :select t :quit nil :ttl nil)
 (after! eww
   (setq display-buffer-alist
         '(("\\*eww\\*"
@@ -81,4 +90,4 @@
 ;; (after! smartparens
 ;;   (sp-pair "*" nil :actions :rem))
 
-(use-package! pgmacs)
+;; (use-package! pgmacs)

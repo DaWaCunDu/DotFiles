@@ -86,7 +86,7 @@
        :checkers
        syntax              ; tasing you for every semicolon you forget
        (spell +flyspell) ; tasing you for misspelling mispelling
-       grammar           ; tasing grammar mistake every you make
+       ;; grammar           ; tasing grammar mistake every you make
 
        :tools
        ;;ansible
@@ -227,3 +227,14 @@
 (setq shell-pop-shell-type '("vterm" "*shell-pop-vterm*" (lambda () (vterm))))
 (setq shell-pop-window-position "right")
 (setq shell-pop-window-size 40) ; Percentage of the frame width
+;;
+;; Enable the built-in time mode
+;; (setq display-time-format "%I:%M %p")
+;; (setq display-time-format "%H:%M")
+;; (setq display-time-interval 60)
+;; (display-time-mode 1)
+
+;; Place the clock on the far right of the status bar
+;; (setq mode-line-format
+;;       (append (default-value 'mode-line-format)
+;;               '(mode-line-format-right-align mode-line-misc-info)))
