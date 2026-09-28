@@ -1,0 +1,184 @@
+#+Title: Config
+
+
+* Themes and Fonts:
+#+begin_src emacs-lisp
+
+(after! time
+  ;; (setq display-time-string-forms
+        ;; '((propertize (concat 24-hr time) 'face 'doom-modeline-time)))
+  (setq display-time-format "%H:%M")
+  (setq display-time-default-load-average nil))
+  (setq display-time-interval 60)
+  (display-time-mode 1)
+
+
+;; >>> ArchGodot/OpenCode: MOVED (font size now lives in "OS Specific Configs")
+;; The only setting that differs between the Mac mini and the Pi. Moved out of
+;; this section so every per-OS decision has exactly one home. See below.
+;; <<< ArchGodot/OpenCode: END
+
+;;(setq doom-theme 'doom-one)
+;; (setq doom-theme 'wombat)
+;; (setq doom-theme 'doom-1337)
+(setq doom-theme 'doom-old-hope)
+
+(setq display-line-numbers-type t)
+#+end_src
+
+* OS Specific Configs:
+
+:PROPERTIES:
+:CUSTOM_ID: os-specific-configs
+:END:
+
+This file is shared by both machines: the Mac mini =FONTAWA= darwin, the
+Pi =FONTAWA= linux-nt. Anything that must differ between them belongs in THIS
+section and nowhere else.
+
+Keep it one section with =FONTAWA= cond= branches per OS, rather than a "macOS"
+heading and a "Linux" heading side by side. Two headings means two copies of the
+same fact, and keeping them in sync by hand is exactly how the per-machine
+config files drifted apart in the first place.
+
+As of the last edit, =doom-font= is the only thing that differs. Everything else
+-- the modeline clock, vterm popup width, =fill-column=, and the org emphasis
+faces -- is deliberately identical on both, so that stays out of here.
+
+#+begin_src emacs-lisp
+;; >>> ArchGodot/OpenCode: ADDED (OS Specific Configs section) -- search "OpenCode" to revert
+;; The Pi runs Emacs in a terminal, so it needs a bigger font than the Mac's GUI
+;; frame. This is the ONLY per-OS setting; if 16 turns out to be wrong on the
+;; Pi, it is the one number to change.
+(cond
+ ((eq system-type 'linux-nt)
+  (setq doom-font (font-spec :family "JetBrains Mono" :size 16)))
+ ((eq system-type 'darwin)
+  (setq doom-font (font-spec :family "JetBrains Mono" :size 14))))
+;; <<< ArchGodot/OpenCode: END
+#+end_src
+
+* Org Config:
+#+begin_src emacs-lisp
+(setq org-directory "~/org/")
+(setq org-modern-table-vertical 1)
+(setq org-modern-table t)
+(add-hook 'org-mode-hook #'hl-todo-mode)
+
+(custom-set-faces!
+  '(org-level-8 :inherit outline-3 :height 1.0)
+  '(org-level-7 :inherit outline-3 :height 1.0)
+  '(org-level-6 :inherit outline-3 :height 1.1)
+  '(org-level-5 :inherit outline-3 :height 1.2)
+  '(org-level-4 :inherit outline-3 :height 1.3)
+  '(org-level-3 :inherit outline-3 :height 1.4)
+  '(org-level-2 :inherit outline-2 :height 1.5)
+  '(org-level-1 :inherit outline-1 :height 1.6)
+  '(org-document-title :height 1.8 :bold t :underline nil))
+
+;; >>> ArchGodot/OpenCode: ADDED (org emphasis color) -- search "OpenCode" to remove
+;; Org puts *bold* and /italic/ emphasis on the plain `bold' and `italic' faces.
+;; doom-old-hope renders those as bright white, which is nearly unreadable next
+;; to normal text. Markdown-mode instead colors emphasis orange via its own
+;; `font-lock-emphasis-face'. These two faces point org at the SAME face, so
+;; org emphasis matches markdown exactly and keeps tracking your theme.
+;;
+;; Deliberately NOT changed: emphasis markers stay hidden (org-hide-emphasis-markers
+;; untouched), =verbatim=, ~code~, +strike+ and _underline_ are all as they were.
+;; Nothing else in org is affected.
+;;
+;; To revert: delete everything between these two marker lines.
+;; If `font-lock-emphasis-face' ever stops resolving (e.g. markdown-mode removed
+;; from init.el), swap the :inherit for a literal color instead:
+;;   :foreground "#e0a05f"
+;; Attribute values below are deliberately UNQUOTED. In a defface spec a bare
+;; symbol is the literal attribute value, while a quoted one (:weight 'bold) is
+;; an error: "Wrong type argument: symbolp, 'bold". Verified against Emacs 30.1.
+(defface org-emphasis-bold
+  '((t :inherit font-lock-emphasis-face :weight bold))
+  "Org *bold* emphasis, colored like markdown-mode emphasis.")
+(defface org-emphasis-italic
+  '((t :inherit font-lock-emphasis-face :slant italic))
+  "Org /italic/ emphasis, colored like markdown-mode emphasis.")
+(setq org-emphasis-alist
+      '(("*" org-emphasis-bold)
+        ("/" org-emphasis-italic)
+        ("_" underline)
+        ("=" org-verbatim verbatim)
+        ("~" org-code verbatim)
+        ("+" (:strike-through t))))
+;; <<< ArchGodot/OpenCode: END
+#+end_src
+
+* MarkDown Config:
+#+begin_src emacs-lisp
+(setq markdown-header-scaling t)
+
+(custom-set-faces
+ '(markdown-header-face-1 ((t (:inherit markdown-header-face :height 1.6))))
+ '(markdown-header-face-2 ((t (:inherit markdown-header-face :height 1.4))))
+ '(markdown-header-face-3 ((t (:inherit markdown-header-face :height 1.2))))
+ '(markdown-header-face-4 ((t (:inherit markdown-header-face :height 1.1))))
+ )
+
+#+end_src
+
+* Key Mapping \ Key Binding
+#+begin_src emacs-lisp
+(map! :leader
+      :desc "Comment Line" "#" #'comment-line)
+(map! :leader
+      :desc "Toggle SmartParens" "t s" #'smartparens-mode)
+(map! :leader
+      :desc "Centaur-Tabs BackWard" "t p" #'centaur-tabs-backward)
+(map! :leader
+      :desc "Centaur-Tabs ForWard" "t n" #'centaur-tabs-forward)
+(map! :leader
+      :desc "Toggle TreeMacs" "e" #'+treemacs/toggle)
+(map! :leader
+      :desc "Toggle vterm popup"
+      "v" #'+vterm/toggle)
+(map! :leader
+      :desc "Terminal in Vertical Split"
+      "t t" (lambda () (interactive) (evil-window-vsplit) (+vterm/here nil)))
+#+end_src
+
+* Misc Flags:
+#+begin_src emacs-lisp
+;; Word Wrapping
+;; >>> ArchGodot/OpenCode: EDITED (100 -> 120) -- search "OpenCode" to revert
+;; Changed from 100 to 120 so the Pi matches the Mac. One value for both boxes.
+(setq-default fill-column 120) ; Set the target wrap column
+;; <<< ArchGodot/OpenCode: END
+
+;; Automatically enable visual-fill-column when visual-line-mode is on
+(add-hook 'visual-line-mode-hook #'visual-fill-column-mode)
+
+(set-popup-rule! "^\\*doom:vterm-popup" :side 'right :size 0.45 :select t :quit nil :ttl nil)
+(after! eww
+  (setq display-buffer-alist
+        '(("\\*eww\\*"
+           (display-buffer-in-direction)
+           (direction . right) ; Change to 'left' if preferred
+           (dedicated . nil)
+           (window-width . 0.5)))) ; Adjust width ratio here
+)
+;; (after! vterm
+;;   (setq display-buffer-alist
+;;         '(("\\*vterm\\*"
+;;            (display-buffer-in-direction)
+;;            (direction . right) ; Change to 'left' if preferred
+;;            (dedicated . nil)
+;;            (window-width . 0.5)))) ; Adjust width ratio here
+;; )
+;; Should fix j and k to move on visual line instead of physical lines
+(with-eval-after-load 'evil-maps
+  (define-key evil-motion-state-map (kbd "j") 'evil-next-visual-line)
+  (define-key evil-motion-state-map (kbd "k") 'evil-previous-visual-line))
+
+(setq confirm-kill-emacs nil)
+;; (after! smartparens
+;;   (sp-pair "*" nil :actions :rem))
+
+;; (use-package! pgmacs)
+#+end_src
