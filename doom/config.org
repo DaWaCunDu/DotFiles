@@ -18,10 +18,14 @@
 ;; this section so every per-OS decision has exactly one home. See below.
 ;; <<< ArchGodot/OpenCode: END
 
+;; History of this setting, kept for reference -- the live value is chosen per-OS
+;; in the "OS Specific Configs" section below (doom-one on the Pi, old-hope on the
+;; Mac). Do NOT uncomment one of these: a second unconditional setq is exactly
+;; how the two machines drift apart again.
 ;;(setq doom-theme 'doom-one)
 ;; (setq doom-theme 'wombat)
 ;; (setq doom-theme 'doom-1337)
-(setq doom-theme 'doom-old-hope)
+;; (setq doom-theme 'doom-old-hope)
 
 (setq display-line-numbers-type t)
 #+end_src
@@ -52,9 +56,25 @@ faces -- is deliberately identical on both, so that stays out of here.
 ;; Pi, it is the one number to change.
 (cond
  ((eq system-type 'linux-nt)
-  (setq doom-font (font-spec :family "JetBrains Mono" :size 16)))
+  (setq doom-font (font-spec :family "JetBrains Mono" :size 16))
+  ;; >>> ArchGodot/OpenCode: ADDED (per-OS theme) -- search "OpenCode" to revert
+  ;; doom-one on the Pi, old-hope on the Mac. The Pi runs Emacs in a TERMINAL,
+  ;; and doom-old-hope's mode line carries a 4-cell :box (from its
+  ;; `doom-old-hope-padded-modeline' default), which a terminal draws as a
+  ;; solid blue bar across the top and bottom of every frame. doom-one has no
+  ;; such box and reads correctly in a terminal; old-hope looks right in the
+  ;; Mac's GUI frame.
+  ;;
+  ;; There was a previous attempt to strip the box out of old-hope in a
+  ;; terminal (see the TTY Fixes section further down). It did not survive
+  ;; contact with the actual terminal renderer, so the theme is chosen per-OS
+  ;; instead. That section is now inert on the Pi; it is harmless and would do
+  ;; the job if old-hope is ever wanted back in a terminal.
+  (setq doom-theme 'doom-one))
+  ;; <<< ArchGodot/OpenCode: END
  ((eq system-type 'darwin)
-  (setq doom-font (font-spec :family "JetBrains Mono" :size 14))))
+  (setq doom-font (font-spec :family "JetBrains Mono" :size 14))
+  (setq doom-theme 'doom-old-hope)))
 ;; <<< ArchGodot/OpenCode: END
 #+end_src
 
@@ -79,27 +99,44 @@ faces -- is deliberately identical on both, so that stays out of here.
 ;; >>> ArchGodot/OpenCode: ADDED (org emphasis color) -- search "OpenCode" to remove
 ;; Org puts *bold* and /italic/ emphasis on the plain `bold' and `italic' faces.
 ;; doom-old-hope renders those as bright white, which is nearly unreadable next
-;; to normal text. Markdown-mode instead colors emphasis orange via its own
-;; `font-lock-emphasis-face'. These two faces point org at the SAME face, so
-;; org emphasis matches markdown exactly and keeps tracking your theme.
+;; to normal text. Goal: emphasis reads like markdown's orange, while the
+;; markers themselves stay hidden -- so only the text between the *s is colored.
 ;;
-;; Deliberately NOT changed: emphasis markers stay hidden (org-hide-emphasis-markers
-;; untouched), =verbatim=, ~code~, +strike+ and _underline_ are all as they were.
-;; Nothing else in org is affected.
+;; The color is the theme's own `orange' palette entry (#ee7b29, from
+;; doom-old-hope-theme.el), hardcoded so this block has NO dependency on any
+;; other mode being loaded.
+;;
+;; HISTORY, and why the obvious approach failed twice:
+;;   1. First attempt inherited `font-lock-emphasis-face'. That face does not
+;;      exist in Emacs, and :inherit of a missing face is NOT an error -- Emacs
+;;      silently inherits nothing, so the text stayed white and looked like the
+;;      config "worked".
+;;   2. Second attempt inherited `markdown-bold-face' / `markdown-italic-face'
+;;      to track markdown exactly. But that makes org depend on markdown-mode
+;;      being installed, and it is not installed on the pi -- so org emphasis
+;;      silently went white again, in a different machine, same symptom.
+;;   Lesson: never :inherit a face you have not confirmed exists with (facep).
+;;   A literal color cannot fail this way.
+;;
+;; Deliberately NOT changed: =verbatim=, ~code~, +strike+ and _underline_ are all
+;; as they were. Nothing else in org is affected.
 ;;
 ;; To revert: delete everything between these two marker lines.
-;; If `font-lock-emphasis-face' ever stops resolving (e.g. markdown-mode removed
-;; from init.el), swap the :inherit for a literal color instead:
-;;   :foreground "#e0a05f"
-;; Attribute values below are deliberately UNQUOTED. In a defface spec a bare
-;; symbol is the literal attribute value, while a quoted one (:weight 'bold) is
-;; an error: "Wrong type argument: symbolp, 'bold". Verified against Emacs 30.1.
+;; If you switch themes and want the new theme's orange, re-read its `orange'
+;; entry:  grep -n "'(orange" <theme>.el
+;; Attribute values are deliberately UNQUOTED. In a defface spec a bare symbol
+;; is the literal attribute value, while a quoted one (:weight 'bold) is an
+;; error: "Wrong type argument: symbolp, 'bold". Verified against Emacs 30.1.
 (defface org-emphasis-bold
-  '((t :inherit font-lock-emphasis-face :weight bold))
-  "Org *bold* emphasis, colored like markdown-mode emphasis.")
+  '((t :foreground "#ee7b29" :weight bold))
+  "Org *bold* emphasis, in the theme's orange.")
 (defface org-emphasis-italic
-  '((t :inherit font-lock-emphasis-face :slant italic))
-  "Org /italic/ emphasis, colored like markdown-mode emphasis.")
+  '((t :foreground "#ee7b29" :slant italic))
+  "Org /italic/ emphasis, in the theme's orange.")
+;; Markers hidden, so only the emphasized text carries the color. This is also
+;; org's own default from 9.x, but set it explicitly so the behavior does not
+;; depend on the org version.
+(setq org-hide-emphasis-markers t)
 (setq org-emphasis-alist
       '(("*" org-emphasis-bold)
         ("/" org-emphasis-italic)
@@ -107,6 +144,64 @@ faces -- is deliberately identical on both, so that stays out of here.
         ("=" org-verbatim verbatim)
         ("~" org-code verbatim)
         ("+" (:strike-through t))))
+;; <<< ArchGodot/OpenCode: END
+#+end_src
+
+* TTY Fixes
+:PROPERTIES:
+:CUSTOM_ID: tty-fixes
+:END:
+
+#+begin_src emacs-lisp
+;; >>> ArchGodot/OpenCode: ADDED (terminal-only) -- search "OpenCode" to remove
+;; THE ACTUAL CAUSE (found in doom-old-hope-theme.el):
+;;   line 106:  (-modeline-pad (when doom-old-hope-padded-modeline
+;;                             (if (integerp doom-old-hope-padded-modeline)
+;;                                 doom-old-hope-padded-modeline 4)))
+;;   line 133:  (mode-line ... :box (if -modeline-pad
+;;                                 `(:line-width ,-modeline-pad :color ,modeline-bg)))
+;; So the "blue line" is not a border around the frame -- it is a FOUR-CELL-WIDE
+;; :box that doom-old-hope draws on the mode line whenever its
+;; `doom-old-hope-padded-modeline' defcustom is non-nil. A :line-width 4 box is
+;; fine on a GUI frame, but a terminal draws it as a solid 4-row blue bar across
+;; the top and bottom of every frame. That is the "blue line from nowhere", and
+;; it is why wombat looked clean by comparison.
+;;
+;; FIX: turn the padding off. That is the theme's own supported knob, and
+;; because `-modeline-pad' is computed at theme-definition time, it must be set
+;; BEFORE the theme is applied -- so it is set here and again in the
+;; `after-load-theme' hook below, which is order-independent.
+;;
+;; A terminal check is used so the Mac mini's GUI frames keep the padding.
+;; `:box nil' is then swept over the three other faces that also get the box
+;; (mode-line-inactive, and both solaire faces), which the defcustom path alone
+;; would leave behind.
+;;
+;; API traps hit while writing this, both fixed and recorded:
+;;   1. There is NO `custom-set-faces!' -- that bang variant does not exist in
+;;      Emacs 30.1. The function is `custom-set-faces' (cus-face.el).
+;;   2. Its arguments must be (FACE SPEC) where SPEC is a full conditional spec
+;;      -- ((t (...))) -- NOT a bare plist. A bare plist such as
+;;      '(mode-line :inherit default :box nil) throws
+;;      "Wrong type argument: listp, :inherit". Shape copied from the working
+;;      MarkDown Config block below.
+;;
+;; To revert: delete everything between these two marker lines.
+(defun my--tty-kill-modeline-pad ()
+  "Remove doom-old-hope's 4-row mode-line box in a terminal. See TTY Fixes."
+  (when (and (not (display-graphic-p))
+             (boundp 'doom-old-hope-padded-modeline))
+    (setq doom-old-hope-padded-modeline nil)
+    (custom-set-faces
+     '(mode-line ((t (:box nil :overline nil :underline nil))))
+     '(mode-line-inactive ((t (:box nil :overline nil :underline nil))))
+     '(header-line ((t (:box nil :overline nil :underline nil))))
+     '(solaire-mode-line-face ((t (:box nil))))
+     '(solaire-mode-line-inactive-face ((t (:box nil)))))))
+
+(my--tty-kill-modeline-pad)
+;; Re-apply if the theme loads later, so this does not depend on load order.
+(add-hook 'after-load-theme #'my--tty-kill-modeline-pad)
 ;; <<< ArchGodot/OpenCode: END
 #+end_src
 

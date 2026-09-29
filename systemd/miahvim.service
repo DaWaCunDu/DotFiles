@@ -1,0 +1,17 @@
+[Unit]
+Description=miahvim Next.js vim editor (miahvim.potli.us)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=archgodot
+Group=archgodot
+WorkingDirectory=/mnt/MacStore/potli/miahvim/src
+EnvironmentFile=/mnt/MacStore/potli/miahvim/conf/miahvim.env
+ExecStart=/home/archgodot/.nvm/versions/node/v24.20.0/bin/pnpm start
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

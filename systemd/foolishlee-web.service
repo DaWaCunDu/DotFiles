@@ -1,0 +1,24 @@
+[Unit]
+Description=foolishlee.com Next.js blog (markdown + org from content/)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=archgodot
+Group=archgodot
+WorkingDirectory=/mnt/MacStore/www/foolishlee.com
+Environment=PORT=3002
+Environment=HOSTNAME=127.0.0.1
+# pnpm's shebang is "#!/usr/bin/env node", so node MUST be on PATH even though
+# pnpm itself is invoked by absolute path. Without this the unit exits 127 with
+# "env: 'node': No such file or directory" and crash-loops. Bump the version
+# path if nvm moves node.
+Environment=PATH=/home/archgodot/.nvm/versions/node/v24.20.0/bin:/usr/local/bin:/usr/bin:/bin
+EnvironmentFile=-/mnt/MacStore/www/foolishlee.com/.env.local
+ExecStart=/home/archgodot/.nvm/versions/node/v24.20.0/bin/pnpm start
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

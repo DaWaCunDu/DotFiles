@@ -1,0 +1,17 @@
+[Unit]
+Description=potli.us Next.js web app (projects + mbti)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=archgodot
+Group=archgodot
+WorkingDirectory=/mnt/MacStore/potli/src/www
+EnvironmentFile=/mnt/MacStore/potli/src/www/.env.local
+ExecStart=/home/archgodot/.nvm/versions/node/v24.20.0/bin/pnpm start
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
