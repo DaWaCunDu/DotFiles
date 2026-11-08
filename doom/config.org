@@ -276,4 +276,40 @@ faces -- is deliberately identical on both, so that stays out of here.
 ;;   (sp-pair "*" nil :actions :rem))
 
 ;; (use-package! pgmacs)
+
+(defun my-apply-terminal-transparency ()
+  "Safely force terminal background transparency over active layers."
+  (unless (display-graphic-p)
+    (set-face-background 'default "unspecified-bg")
+    (set-face-background 'line-number "unspecified-bg")
+    (set-face-background 'fringe "unspecified-bg")
+    ;; Only apply to solaire faces if the solaire-mode package has loaded them
+    (when (facep 'solaire-default-face)
+      (set-face-background 'solaire-default-face "unspecified-bg"))
+    (when (facep 'solaire-line-number-face)
+      (set-face-background 'solaire-line-number-face "unspecified-bg"))))
+
+;; Run it safely whenever themes load or solar-mode activates
+(add-hook 'doom-load-theme-hook #'my-apply-terminal-transparency)
+(after! solaire-mode
+  (add-hook 'solaire-mode-hook #'my-apply-terminal-transparency))
+
+
+#+end_src
+
+* Arduino and ESP32-IDF
+-----
+#+begin_src emacs-lisp
+
+(add-to-list 'auto-mode-alist '("\\.ino\\'" . c++-mode))
+
+(use-package! arduino-mode
+  :mode "\\.ino\\'")
+
+;; (map! :nv "J" #'evil-scroll-page-down
+;;       :nv "K" #'evil-scroll-page-up)
+
+(map! :nv "J" #'evil-scroll-down
+      :nv "K" #'evil-scroll-up)
+
 #+end_src

@@ -58,3 +58,5 @@
 (package! pgmacs :recipe (:host github :repo "emarsden/pgmacs"))
 (package! shell-pop)
 (package! visual-fill-column)
+(package! ox-hugo)
+(package! arduino-mode)

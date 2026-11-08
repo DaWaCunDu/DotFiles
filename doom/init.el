@@ -227,6 +227,7 @@
 (setq shell-pop-shell-type '("vterm" "*shell-pop-vterm*" (lambda () (vterm))))
 (setq shell-pop-window-position "right")
 (setq shell-pop-window-size 40) ; Percentage of the frame width
+(setq recentf-auto-cleanup 'never)
 ;;
 ;; Enable the built-in time mode
 ;; (setq display-time-format "%I:%M %p")
