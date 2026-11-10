@@ -41,41 +41,24 @@ Pi =FONTAWA= linux-nt. Anything that must differ between them belongs in THIS
 section and nowhere else.
 
 Keep it one section with =FONTAWA= cond= branches per OS, rather than a "macOS"
-heading and a "Linux" heading side by side. Two headings means two copies of the
-same fact, and keeping them in sync by hand is exactly how the per-machine
-config files drifted apart in the first place.
+heading and a "Linux" heading side by side. Two headings means two copies of the same fact, and keeping them in sync by hand is exactly how the per-machine config files drifted apart in the first place.
 
 As of the last edit, =doom-font= is the only thing that differs. Everything else
 -- the modeline clock, vterm popup width, =fill-column=, and the org emphasis
 faces -- is deliberately identical on both, so that stays out of here.
 
 #+begin_src emacs-lisp
-;; >>> ArchGodot/OpenCode: ADDED (OS Specific Configs section) -- search "OpenCode" to revert
-;; The Pi runs Emacs in a terminal, so it needs a bigger font than the Mac's GUI
-;; frame. This is the ONLY per-OS setting; if 16 turns out to be wrong on the
-;; Pi, it is the one number to change.
+
 (cond
  ((eq system-type 'linux-nt)
   (setq doom-font (font-spec :family "JetBrains Mono" :size 16))
-  ;; >>> ArchGodot/OpenCode: ADDED (per-OS theme) -- search "OpenCode" to revert
-  ;; doom-one on the Pi, old-hope on the Mac. The Pi runs Emacs in a TERMINAL,
-  ;; and doom-old-hope's mode line carries a 4-cell :box (from its
-  ;; `doom-old-hope-padded-modeline' default), which a terminal draws as a
-  ;; solid blue bar across the top and bottom of every frame. doom-one has no
-  ;; such box and reads correctly in a terminal; old-hope looks right in the
-  ;; Mac's GUI frame.
-  ;;
-  ;; There was a previous attempt to strip the box out of old-hope in a
-  ;; terminal (see the TTY Fixes section further down). It did not survive
-  ;; contact with the actual terminal renderer, so the theme is chosen per-OS
-  ;; instead. That section is now inert on the Pi; it is harmless and would do
-  ;; the job if old-hope is ever wanted back in a terminal.
-  (setq doom-theme 'doom-one))
-  ;; <<< ArchGodot/OpenCode: END
+  (setq doom-theme 'doom-midnight))
+
  ((eq system-type 'darwin)
   (setq doom-font (font-spec :family "JetBrains Mono" :size 14))
-  (setq doom-theme 'doom-old-hope)))
-;; <<< ArchGodot/OpenCode: END
+  (setq doom-theme 'doom-shades-of-purple)))
+  ;; (setq doom-theme 'doom-old-hope)))
+
 #+end_src
 
 * Org Config:
@@ -248,6 +231,7 @@ faces -- is deliberately identical on both, so that stays out of here.
 
 ;; Automatically enable visual-fill-column when visual-line-mode is on
 (add-hook 'visual-line-mode-hook #'visual-fill-column-mode)
+(setq evil-respect-visual-line-mode t)
 
 (set-popup-rule! "^\\*doom:vterm-popup" :side 'right :size 0.45 :select t :quit nil :ttl nil)
 (after! eww

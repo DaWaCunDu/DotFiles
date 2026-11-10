@@ -12,23 +12,26 @@
 ;; this section so every per-OS decision has exactly one home. See below.
 ;; <<< ArchGodot/OpenCode: END
 
+;; History of this setting, kept for reference -- the live value is chosen per-OS
+;; in the "OS Specific Configs" section below (doom-one on the Pi, old-hope on the
+;; Mac). Do NOT uncomment one of these: a second unconditional setq is exactly
+;; how the two machines drift apart again.
 ;;(setq doom-theme 'doom-one)
 ;; (setq doom-theme 'wombat)
 ;; (setq doom-theme 'doom-1337)
-(setq doom-theme 'doom-old-hope)
+;; (setq doom-theme 'doom-old-hope)
 
 (setq display-line-numbers-type t)
 
-;; >>> ArchGodot/OpenCode: ADDED (OS Specific Configs section) -- search "OpenCode" to revert
-;; The Pi runs Emacs in a terminal, so it needs a bigger font than the Mac's GUI
-;; frame. This is the ONLY per-OS setting; if 16 turns out to be wrong on the
-;; Pi, it is the one number to change.
 (cond
  ((eq system-type 'linux-nt)
-  (setq doom-font (font-spec :family "JetBrains Mono" :size 16)))
+  (setq doom-font (font-spec :family "JetBrains Mono" :size 16))
+  (setq doom-theme 'doom-midnight))
+
  ((eq system-type 'darwin)
-  (setq doom-font (font-spec :family "JetBrains Mono" :size 14))))
-;; <<< ArchGodot/OpenCode: END
+  (setq doom-font (font-spec :family "JetBrains Mono" :size 14))
+  (setq doom-theme 'doom-shades-of-purple)))
+  ;; (setq doom-theme 'doom-old-hope)))
 
 (setq org-directory "~/org/")
 (setq org-modern-table-vertical 1)
@@ -181,6 +184,7 @@
 
 ;; Automatically enable visual-fill-column when visual-line-mode is on
 (add-hook 'visual-line-mode-hook #'visual-fill-column-mode)
+(setq evil-respect-visual-line-mode t)
 
 (set-popup-rule! "^\\*doom:vterm-popup" :side 'right :size 0.45 :select t :quit nil :ttl nil)
 (after! eww

@@ -78,23 +78,7 @@
 (add-hook 'visual-line-mode-hook #'visual-fill-column-mode)
 
 (set-popup-rule! "^\\*doom:vterm-popup" :side 'right :size 0.35 :select t :quit nil :ttl nil)
-;; (after! eww
-;;   (setq display-buffer-alist
-;;         '(("\\*eww\\*"
-;;           (display-buffer-in-direction)
-;;           (direction . right) ; Change to 'left' if preferred
-;;           (dedicated . nil)
-;;           (window-width . 0.5)))) ; Adjust width ratio here
-;; )
-;; (after! vterm
-;;   (setq display-buffer-alist
-;;         '(("\\*vterm\\*"
-;;            (display-buffer-in-direction)
-;;            (direction . right) ; Change to 'left' if preferred
-;;            (dedicated . nil)
-;;            (window-width . 0.5)))) ; Adjust width ratio here
-;; )
-;; Should fix j and k to move on visual line instead of physical lines
+
 (with-eval-after-load 'evil-maps
   (define-key evil-motion-state-map (kbd "j") 'evil-next-visual-line)
   (define-key evil-motion-state-map (kbd "k") 'evil-previous-visual-line))
