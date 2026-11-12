@@ -16,7 +16,8 @@
 ;; in the "OS Specific Configs" section below (doom-one on the Pi, old-hope on the
 ;; Mac). Do NOT uncomment one of these: a second unconditional setq is exactly
 ;; how the two machines drift apart again.
-;;(setq doom-theme 'doom-one)
+;; (setq doom-theme 'doom-one)
+(setq doom-theme 'doom-moonlight)
 ;; (setq doom-theme 'wombat)
 ;; (setq doom-theme 'doom-1337)
 ;; (setq doom-theme 'doom-old-hope)
@@ -26,7 +27,7 @@
 (cond
  ((eq system-type 'linux-nt)
   (setq doom-font (font-spec :family "JetBrains Mono" :size 16))
-  (setq doom-theme 'doom-midnight))
+  (setq doom-theme 'doom-moonlight))
 
  ((eq system-type 'darwin)
   (setq doom-font (font-spec :family "JetBrains Mono" :size 14))
